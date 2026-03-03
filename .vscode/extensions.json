@@ -1,0 +1,12 @@
+{
+  "recommendations": [
+    "oxc.oxc-vscode",
+
+    "vitest.explorer",
+
+    "aaron-bond.better-comments",
+    "streetsidesoftware.code-spell-checker",
+
+    "mhutchie.git-graph"
+  ]
+}
