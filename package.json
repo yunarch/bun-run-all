@@ -34,7 +34,9 @@
   "engines": {
     "bun": ">=1.2.0"
   },
-  "bin": "dist/index.js",
+  "bin": {
+    "bun-run-all": "dist/index.js"
+  },
   "publishConfig": {
     "access": "public"
   },
@@ -48,9 +50,9 @@
     "format:all": "oxfmt format --write ./",
     "clean": "rimraf dist",
     "build": "bun build ./src/index.ts --outdir ./dist --minify --target node --format esm --external commander",
-    "tests": "vitest --typecheck run",
-    "tests:watch": "vitest --typecheck watch",
-    "tests:dist": "bun run build && TEST_DIST=true bun run tests"
+    "test": "bun test",
+    "test:watch": "bun test --watch",
+    "test:dist": "bun run build && TEST_DIST=true bun run test"
   },
   "dependencies": {
     "commander": "14.0.3"
@@ -62,7 +64,6 @@
     "oxlint-tsgolint": "0.16.0",
     "husky": "9.1.7",
     "rimraf": "6.1.3",
-    "vitest": "4.0.18",
     "typescript": "5.9.3",
     "@types/node": "25.3.3",
     "@types/bun": "1.3.10"

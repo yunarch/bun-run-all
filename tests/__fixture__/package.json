@@ -1,0 +1,12 @@
+{
+  "private": true,
+  "name": "bun-run-all-test-package",
+  "scripts": {
+    "test-success-1": "exit 0",
+    "test-success-2": "exit 0",
+    "test-failure": "exit 1",
+    "test-failure-2": "exit 1",
+    "test-echo": "bun -e \"console.log('hello-from-script')\"",
+    "test-stderr-fail": "bun -e \"console.error('error-output'); process.exit(1)\""
+  }
+}
