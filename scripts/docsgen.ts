@@ -1,6 +1,7 @@
+import { execFile } from 'node:child_process';
 import { readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import spawn from 'nano-spawn';
+import { promisify } from 'node:util';
 
 const ROOT_DIR = resolve(import.meta.dirname, '..');
 const README_PATH = resolve(ROOT_DIR, 'README.md');
@@ -9,10 +10,15 @@ const START_MARKER = '<!-- [docsgen]: start -->';
 const END_MARKER = '<!-- [docsgen]: end -->';
 
 // Run the CLI help command and capture output
-const { stdout } = await spawn('bun', ['src/index.ts', '--help'], {
-  cwd: ROOT_DIR,
-  env: { ...process.env, NO_COLOR: '1' },
-});
+const promisifiedExecFile = promisify(execFile);
+const { stdout } = await promisifiedExecFile(
+  'bun',
+  ['src/index.ts', '--help'],
+  {
+    cwd: ROOT_DIR,
+    env: { ...process.env, NO_COLOR: '1' },
+  }
+);
 
 const helpText = stdout.trim();
 const newUsageBlock = `${START_MARKER}\n\n\`\`\`\n${helpText}\n\`\`\`\n\n${END_MARKER}`;
