@@ -24,7 +24,9 @@ export async function collectOutput(cliArgs: string[]) {
       execution.child.stdout?.on('data', (chunk: Buffer | string) => {
         data += chunk.toString();
       });
-      execution.child.on('close', (code) => done(code));
+      execution.child.on('close', (code) => {
+        done(code);
+      });
       setTimeout(() => {
         execution.child.kill();
         done(null);
