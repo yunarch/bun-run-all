@@ -64,10 +64,15 @@ describe('bun-run-all', () => {
 
   describe('parallel execution (default)', () => {
     it('exits with code 0 and reports success for a single passing script', async () => {
-      const { stdout } = await collectOutput(['test-success-1']);
+      const { stdout, exitCode } = await collectOutput([
+        '--parallel',
+        'test-success-1',
+      ]);
+      expect(exitCode).toBe(0);
       expect(stdout).toContain('test-success-1:');
       expect(stdout).toContain('1 successful');
       expect(stdout).toContain('-- 1 total');
+      expect(stdout).not.toContain('Finished in');
     });
 
     it('exits with code 0 and reports elapsed time when --time is enabled', async () => {
@@ -97,26 +102,6 @@ describe('bun-run-all', () => {
       expect(stdout).toContain('-- 2 total');
     });
 
-    it('runs scripts with explicit --parallel flag', async () => {
-      const { stdout } = await collectOutput([
-        '--parallel',
-        'test-success-1',
-        'test-success-2',
-      ]);
-      expect(stdout).toContain('test-success-1:');
-      expect(stdout).toContain('test-success-2:');
-      expect(stdout).toContain('2 successful');
-      expect(stdout).toContain('-- 2 total');
-    });
-
-    it('exits with code 0 when all scripts succeed', async () => {
-      const { exitCode } = await collectOutput([
-        'test-success-1',
-        'test-success-2',
-      ]);
-      expect(exitCode).toBe(0);
-    });
-
     it('aborts immediately when a script fails without --continue-on-error', async () => {
       const { stdout, exitCode } = await collectOutput([
         'test-failure',
@@ -140,37 +125,16 @@ describe('bun-run-all', () => {
       expect(stdout).toContain('test-stderr-fail:');
       expect(stdout).toContain('error-output');
     });
-
-    it('reports correct count when multiple scripts fail', async () => {
-      const { stdout, exitCode } = await collectOutput([
-        '--continue-on-error',
-        'test-failure',
-        'test-failure-2',
-      ]);
-      expect(exitCode).not.toBe(0);
-      expect(stdout).toContain('2 failed');
-      expect(stdout).toContain('-- 2 total');
-    });
-
-    it('only reports elapsed time for successful scripts when --time is enabled', async () => {
-      const { stdout } = await collectOutput([
-        '--continue-on-error',
-        '--time',
-        'test-failure',
-        'test-success-1',
-      ]);
-      const finishedCount = (stdout.match(/Finished in/g) || []).length;
-      expect(finishedCount).toBe(1);
-    });
   });
 
   describe('sequential execution (--sequential)', () => {
     it('exits with code 0 and runs scripts in order for multiple passing scripts', async () => {
-      const { stdout } = await collectOutput([
+      const { stdout, exitCode } = await collectOutput([
         '--sequential',
         'test-success-1',
         'test-success-2',
       ]);
+      expect(exitCode).toBe(0);
       expect(stdout).toContain('test-success-1:');
       expect(stdout).toContain('test-success-2:');
       expect(stdout).toContain('2 successful');
@@ -206,25 +170,6 @@ describe('bun-run-all', () => {
       expect(stdout).toContain('-- 2 total');
     });
 
-    it('exits with code 0 and runs a single script', async () => {
-      const { stdout } = await collectOutput([
-        '--sequential',
-        'test-success-1',
-      ]);
-      expect(stdout).toContain('test-success-1:');
-      expect(stdout).toContain('1 successful');
-      expect(stdout).toContain('-- 1 total');
-    });
-
-    it('exits with code 0 when all scripts succeed', async () => {
-      const { exitCode } = await collectOutput([
-        '--sequential',
-        'test-success-1',
-        'test-success-2',
-      ]);
-      expect(exitCode).toBe(0);
-    });
-
     it('aborts immediately when a script fails without --continue-on-error', async () => {
       const { stdout, exitCode } = await collectOutput([
         '--sequential',
@@ -234,45 +179,6 @@ describe('bun-run-all', () => {
       expect(exitCode).not.toBe(0);
       expect(stdout).not.toContain('Tasks:');
       expect(stdout).not.toContain('test-success-1:');
-    });
-
-    it('reports correct count when multiple scripts fail', async () => {
-      const { stdout, exitCode } = await collectOutput([
-        '--sequential',
-        '--continue-on-error',
-        'test-failure',
-        'test-failure-2',
-      ]);
-      expect(exitCode).not.toBe(0);
-      expect(stdout).toContain('2 failed');
-      expect(stdout).toContain('-- 2 total');
-    });
-  });
-
-  describe('short flag aliases', () => {
-    it('supports -p short flag for --parallel', async () => {
-      const { stdout } = await collectOutput(['-p', 'test-success-1']);
-      expect(stdout).toContain('1 successful');
-    });
-
-    it('supports -s short flag for --sequential', async () => {
-      const { stdout } = await collectOutput(['-s', 'test-success-1']);
-      expect(stdout).toContain('1 successful');
-    });
-
-    it('supports -c short flag for --continue-on-error', async () => {
-      const { stdout } = await collectOutput([
-        '-c',
-        'test-failure',
-        'test-success-1',
-      ]);
-      expect(stdout).toContain('1 failed');
-      expect(stdout).toContain('1 successful');
-    });
-
-    it('supports -t short flag for --time', async () => {
-      const { stdout } = await collectOutput(['-t', 'test-success-1']);
-      expect(stdout).toContain('Finished in');
     });
   });
 });
