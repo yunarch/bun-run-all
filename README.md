@@ -2,6 +2,9 @@
 
 Run given package scripts in parallel or sequential by using bun.
 
+> [!NOTE]
+> CLI extracted from https://github.com/yunarch/config-web. keeping it around in case someone still finds it useful.
+
 ## Usage
 
 <!-- [docsgen]: start -->
